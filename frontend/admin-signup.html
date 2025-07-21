@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Sign Up | AlignAI</title>
+  <title>Admin Sign Up | AI Communication</title>
   <style>
     body {
       margin: 0;
@@ -87,6 +87,11 @@
       color: #555;
     }
 
+    a {
+      color: #357AFF;
+      text-decoration: none;
+    }
+
     a:hover {
       text-decoration: underline;
     }
@@ -95,37 +100,45 @@
 <body>
 
   <div class="container">
-    <form id="signupForm">
+    <form id="adminSignupForm">
       <img src="https://www.talentsmart.co.in/wp-content/uploads/2022/07/TSlogo_original-2.png" alt="Logo" class="logo" />
-      <h2>Create Admin Account</h2>
-      <input type="text" name="username" placeholder="Admin username" required />
-      <input type="email" name="email" placeholder="Admin email" required />
-      <input type="password" name="password" placeholder="Admin password" required />
-      <button type="submit">Register as Admin</button>
-      <p>Already an admin? <a href="admin-login.html">Login here</a></p>
+      <h2>Admin Sign Up</h2>
+      <input type="text" name="username" placeholder="Choose admin username" required />
+      <input type="email" name="email" placeholder="Enter admin email" required />
+      <input type="password" name="password" placeholder="Choose admin password" required />
+      <button type="submit">Sign Up</button>
+      <p>Already an admin? <a href="admin-login.html">Login</a></p>
       <p><a href="index.html">Home</a></p>
     </form>
   </div>
 
   <script>
-    const form = document.getElementById('signupForm');
+    const form = document.getElementById('adminSignupForm');
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      console.log("Admin signup form submitted");
-
       const formData = new FormData(form);
 
-      const response = await fetch("http://localhost:8000/auth/signup", {
-        method: "POST",
-        body: formData,
-      });
+      try {
+        const response = await fetch("http://localhost:8000/admin/signup", {
+          method: "POST",
+          body: formData,
+        });
 
-      const data = await response.json();
-      if (response.ok) {
-        alert("Admin account created! Redirecting to login...");
-        window.location.href = "admin-login.html";
-      } else {
-        alert(data.detail || "Admin signup failed");
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("✅ Admin signup successful! Redirecting to login...");
+          window.location.href = "admin-login.html";
+        } else {
+          if (data.detail === "Admin already exists") {
+            alert("❌ Admin already exists. Try logging in.");
+          } else {
+            alert(data.detail || "❌ Signup failed. Please try again.");
+          }
+        }
+      } catch (err) {
+        alert("❌ Server error. Please try again later.");
+        console.error(err);
       }
     });
   </script>
