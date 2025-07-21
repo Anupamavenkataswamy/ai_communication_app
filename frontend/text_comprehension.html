@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Talent Smart AI | Interview</title>
+  <link rel="icon" href="https://www.talentsmart.co.in/wp-content/uploads/2022/07/TSlogo_original-2.png" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f8ff;
+      margin: 0;
+      padding: 0;
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      background-color: rgba(0, 72, 136, 0.85);
+      color: white;
+    }
+    .navbar img { height: 40px; }
+    .navbar h1 { font-size: 20px; margin: 0; }
+    .navbar .profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .navbar .profile img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      display: flex;
+      gap: 20px;
+    }
+    .sidebar {
+      width: 30%;
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .content {
+      width: 70%;
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      margin-top: 15px;
+    }
+    .calendar div {
+      text-align: center;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 14px;
+      background: #f0f0f0;
+      cursor: pointer;
+    }
+    .calendar .current { background: #357aff; color: white; font-weight: bold; }
+    .calendar .answered { background: #4CAF50; color: white; }
+    .calendar .unanswered { background: #F44336; color: white; }
+    .question-box h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    textarea, audio, button {
+      width: 100%;
+      margin-top: 10px;
+    }
+    textarea {
+      height: 100px;
+      padding: 10px;
+      font-size: 14px;
+    }
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      background-color: #357aff;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .timer {
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 16px;
+      position: fixed;
+      z-index: 1000;
+      bottom: 30px;
+      right: 30px;
+      font-size: 16px;
+      opacity: 0;
+      transition: opacity 0.5s, bottom 0.5s;
+    }
+
+    .toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 50px;
+    }
+  </style>
+</head>
+<!-- START OF BODY -->
+<body>
+  <div class="navbar">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <img src="https://www.talentsmart.co.in/wp-content/uploads/2022/07/TSlogo_original-2.png" alt="Talent Smart Logo">
+      <h1>Communication Test</h1>
+    </div>
+    <div class="profile">
+      <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="User Profile" />
+      <span id="profileName">Guest</span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <h3>Test Questions</h3>
+      <div class="calendar" id="calendar"></div>
+      <p style="margin-top:20px; font-size:14px;">🟩 Answered<br/>🟥 Unanswered</p>
+    </div>
+
+    <div class="content">
+      <div class="question-box" id="questionBox">
+        <h2 id="questionText"></h2>
+        <div id="textAnswer">
+          <textarea id="answerInput" maxlength="600" placeholder="Type your answer (min 100 chars)..."></textarea>
+          <div class="timer" id="textTimer">Time: 2:00</div>
+          <button onclick="submitTextAnswer()">Submit</button>
+          <button id="nextOrSubmitButton" onclick="nextQuestion()">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let isSubmitting = false;
+    let currentQuestionIndex = parseInt(localStorage.getItem("currentQuestionIndex")) || 0;
+    let questions = [];
+    let questionStatus = JSON.parse(localStorage.getItem("questionStatus")) || Array(5).fill("pending");
+    let timerInterval, secondsLeft = 120;
+    let testCompleted = false;
+
+    async function loadQuestions() {
+      const res = await fetch("http://localhost:8000/questions");
+      const data = await res.json();
+      questions = data.questions.slice(0, 5);
+      renderCalendar();
+      showQuestion();
+    }
+
+    function renderCalendar() {
+      const calendar = document.getElementById("calendar");
+      calendar.innerHTML = "";
+      for (let i = 0; i < questions.length; i++) {
+        const div = document.createElement("div");
+        div.textContent = i + 1;
+        div.className = i === currentQuestionIndex ? "current" :
+          questionStatus[i] === "answered" ? "answered" :
+          questionStatus[i] === "skipped" ? "unanswered" : "";
+        div.onclick = () => {
+          if (testCompleted) return alert("✅ Test is completed.");
+          if (questionStatus[i] === "answered") return alert("⚠️ Question already submitted.");
+          currentQuestionIndex = i;
+          localStorage.setItem("currentQuestionIndex", currentQuestionIndex);
+          showQuestion();
+        };
+        calendar.appendChild(div);
+      }
+    }
+
+    function showQuestion() {
+      if (currentQuestionIndex >= questions.length) {
+        testCompleted = true;
+        localStorage.removeItem("currentQuestionIndex");
+        localStorage.removeItem("questionStatus");
+        document.getElementById("questionBox").innerHTML = `
+          <h2>Interview Complete!</h2>
+          <p>We'll let you know the results soon. Thank you!</p>
+          <button onclick="goHome()">Go Back to Home</button>
+        `;
+        return;
+      }
+
+      document.getElementById("answerInput").value = "";
+      document.getElementById("questionText").textContent = `Q${currentQuestionIndex + 1}: ` + questions[currentQuestionIndex];
+      document.getElementById("nextOrSubmitButton").textContent = currentQuestionIndex === 4 ? "Submit All" : "Next";
+
+      document.getElementById("textAnswer").style.display = "block";
+      startTextTimer();
+      renderCalendar();
+    }
+
+    async function sendForFeedback(answer) {
+      const username = localStorage.getItem("username") || "Guest";
+      const email = localStorage.getItem("email") || "guest@example.com";
+
+      const formData = new FormData();
+      formData.append("username", username);
+      formData.append("email", email);
+      formData.append("question", questions[currentQuestionIndex]);
+      formData.append("answer", answer);
+
+      await fetch("http://localhost:8000/feedback", {
+        method: "POST",
+        body: formData,
+      });
+    }
+
+    async function submitTextAnswer() {
+      if (isSubmitting) return;
+      const ans = document.getElementById("answerInput").value;
+      if (ans.length < 100) return alert("Answer must be at least 100 characters.");
+
+      isSubmitting = true;
+      showToast("⏳ Submitting answer...");
+      
+      questionStatus[currentQuestionIndex] = "answered";
+      localStorage.setItem("questionStatus", JSON.stringify(questionStatus));
+
+      await sendForFeedback(ans);
+      alert("✅ Answer submitted successfully. Moving to next question.");
+
+      isSubmitting = false;
+      currentQuestionIndex++;
+      localStorage.setItem("currentQuestionIndex", currentQuestionIndex);
+      showQuestion();
+    }
+
+    function nextQuestion() {
+        if (isSubmitting) {
+        showToast("⏳ Please wait, submitting...");
+        return;
+      }
+      if (questionStatus[currentQuestionIndex] === "pending") {
+        questionStatus[currentQuestionIndex] = "skipped";
+        localStorage.setItem("questionStatus", JSON.stringify(questionStatus));
+      }
+      currentQuestionIndex++;
+      localStorage.setItem("currentQuestionIndex", currentQuestionIndex);
+      clearInterval(timerInterval);
+      showQuestion();
+    }
+
+    function goHome() {
+      window.location.href = "index.html";
+    }
+
+    function startTextTimer() {
+      secondsLeft = 120;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        secondsLeft--;
+        const mins = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+        const secs = String(secondsLeft % 60).padStart(2, '0');
+        document.getElementById("textTimer").textContent = `Time: ${mins}:${secs}`;
+        if (secondsLeft <= 0) {
+          clearInterval(timerInterval);
+          alert("⏰ Time's up! Moving to next question.");
+          nextQuestion();
+        }
+      }, 1000);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.className = "toast show";
+      setTimeout(() => {
+        toast.className = toast.className.replace("show", "");
+      }, 4000);
+    }
+
+    document.getElementById("profileName").textContent = localStorage.getItem("username") || "Guest";
+    loadQuestions();
+  </script>
+
+  <div id="toast" class="toast"></div>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Talent Smart AI | Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      background-color: #f0f2f5;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    .left {
+      flex: 1;
+      background: url('https://i.ibb.co/4ZcYDWsh/image1.png') no-repeat center center;
+      background-size: cover;
+    }
+
+    .right {
+      flex: 1;
+      background-color: #eaf6ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      max-width: 370px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .login-box h2 {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+      color: #0c2d57;
+    }
+
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      font-size: 14px;
+      width: 100%;
+      margin-bottom: 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      gap: 10px;
+      transition: background 0.3s;
+    }
+
+    .google-btn img {
+      width: 18px;
+      height: 18px;
+    }
+
+    .google-btn:hover {
+      background: #f5f5f5;
+    }
+
+    .separator {
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      margin: 15px 0;
+    }
+
+    .input-box {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 10px 36px 10px 32px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .input-box i.fa-user,
+    .input-box i.fa-lock {
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+      color: #aaa;
+    }
+
+    .input-box i.toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #888;
+    }
+
+    .info {
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 12px;
+    }
+
+    .checkbox {
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+
+    .checkbox input {
+      margin-right: 5px;
+    }
+
+    .checkbox a {
+      color: #0c2d57;
+      text-decoration: none;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .actions button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .actions .login {
+      background-color: #0c2d57;
+      color: white;
+    }
+
+    .actions .login:hover {
+      background-color: #092243;
+    }
+
+    .actions .signup {
+      background-color: #f1f1f1;
+      color: #333;
+    }
+
+    .actions .signup:hover {
+      background-color: #ddd;
+    }
+  </style>
+
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const icon = document.getElementById('toggleIcon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    function loginUser() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!username || !password) {
+        alert("Please enter both username and password.");
+        return;
+      }
+
+      // ✅ Save user data to localStorage
+      localStorage.setItem("username", username);
+      localStorage.setItem("email", username + "@example.com"); // optional email logic
+
+      alert("✅ Login successful!");
+      window.location.href = "interview.html"; // ✅ update if your file is named differently
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="left"></div>
+    <div class="right">
+      <div class="login-box">
+        <h2>Log in Your Account</h2>
+        <button class="google-btn">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo">
+          Log in with Google
+        </button>
+        <div class="separator">OR</div>
+        <div class="input-box">
+          <i class="fas fa-user"></i>
+          <input type="text" id="username" placeholder="Enter your Username">
+        </div>
+        <div class="input-box">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" placeholder="Enter your Password">
+          <i class="fas fa-eye toggle-password" id="toggleIcon" onclick="togglePassword()"></i>
+        </div>
+        <div class="info">Must be 8 characters at least</div>
+        <div class="checkbox">
+          <input type="checkbox" id="terms">
+          <label for="terms">I agree to the <a href="#">Terms & Conditions</a></label>
+        </div>
+        <div class="actions">
+          <button class="login" onclick="loginUser()">Log In</button>
+          <button class="signup">Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

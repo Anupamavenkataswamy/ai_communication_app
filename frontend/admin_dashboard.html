@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard | Talent Smart AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f8ff;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #003366;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    th {
+      background-color: #003366;
+      color: white;
+    }
+    tr:hover {
+      background-color: #f0f0f0;
+    }
+    a.details-link {
+      color: #0044cc;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    a.details-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Admin Dashboard - Candidate Summary</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Total Questions</th>
+        <th>Answered</th>
+        <th>Unanswered</th>
+        <th>Total Marks</th>
+        <th>View Details</th>
+      </tr>
+    </thead>
+    <tbody id="userTableBody"></tbody>
+  </table>
+
+  <script>
+    async function loadSummary() {
+      const res = await fetch("http://localhost:8000/admin/feedback");
+      const data = await res.json();
+
+      // Group by username
+      const userMap = {};
+
+      data.forEach(entry => {
+        const user = entry.username;
+        if (!userMap[user]) {
+          userMap[user] = {
+            email: entry.email,
+            total: 8,
+            answered: 0,
+            totalScore: 0
+          };
+        }
+
+        userMap[user].answered++;
+        userMap[user].totalScore += entry.total_score;
+      });
+
+      const tbody = document.getElementById("userTableBody");
+      tbody.innerHTML = "";
+
+      for (const username in userMap) {
+        const info = userMap[username];
+        const unanswered = info.total - info.answered;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${username}</td>
+          <td>${info.email}</td>
+          <td>8</td>
+          <td>${info.answered}</td>
+          <td>${unanswered}</td>
+          <td>${info.totalScore}</td>
+          <td><a class="details-link" href="user_details.html?username=${encodeURIComponent(username)}">View Details</a></td>
+        `;
+        tbody.appendChild(row);
+      }
+    }
+
+    loadSummary();
+  </script>
+
+</body>
+</html>

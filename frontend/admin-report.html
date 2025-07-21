@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard | Feedback Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #003366;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input[type="text"] {
+      width: 300px;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+      word-wrap: break-word;
+    }
+    td:nth-child(3) {
+      max-width: 600px;
+      word-break: break-word;
+    }
+    th {
+      background: #357aff;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Dashboard - User Feedback</h1>
+
+    <input type="text" id="searchInput" placeholder="Search by username..." onkeyup="filterTable()" />
+
+    <button onclick="downloadCSV()">⬇️ Download CSV</button>
+
+    <table id="feedbackTable">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Question</th>
+          <th>Answer</th>
+          <th>Clarity</th>
+          <th>Fluency</th>
+          <th>Grammar</th>
+          <th>Confidence</th>
+          <th>Suggestions</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- Feedback rows appear here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    let feedbackData = [];
+
+    function extractScore(text) {
+      if (!text) return 0;
+      const match = text.match(/(\d)\/5/);
+      return match ? parseInt(match[1]) : 0;
+    }
+
+    function truncateText(text, limit = 600) {
+      if (!text) return "";
+      return text.length > limit ? text.slice(0, limit) + "..." : text;
+    }
+
+    async function loadFeedback() {
+      try {
+        const res = await fetch("http://localhost:8000/admin/feedback");
+        const data = await res.json();
+        feedbackData = data;
+        populateTable(data);
+      } catch (err) {
+        alert("❌ Failed to load feedback data.");
+        console.error(err);
+      }
+    }
+
+    function populateTable(data) {
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
+
+      // Group by username
+      const grouped = {};
+      data.forEach(entry => {
+        if (!grouped[entry.username]) grouped[entry.username] = [];
+        grouped[entry.username].push(entry);
+      });
+
+      Object.keys(grouped).forEach(username => {
+        const userFeedbacks = grouped[username];
+        userFeedbacks.forEach((entry, i) => {
+          const clarity = entry.clarity || "";
+          const fluency = entry.fluency || "";
+          const grammar = entry.grammar || "";
+          const confidence = entry.confidence || "";
+          const total = extractScore(clarity) + extractScore(fluency) + extractScore(grammar) + extractScore(confidence);
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${entry.username}</td>
+            <td>(${i + 1}/8) ${entry.question}</td>
+            <td>${truncateText(entry.answer || "🎙️ Audio Submitted", 600)}</td>
+            <td>${clarity || "Pending"}</td>
+            <td>${fluency || "Pending"}</td>
+            <td>${grammar || "Pending"}</td>
+            <td>${confidence || "Pending"}</td>
+            <td>${entry.suggestions || "Pending"}</td>
+            <td>${total}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    function filterTable() {
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = feedbackData.filter(entry =>
+        entry.username.toLowerCase().includes(search)
+      );
+      populateTable(filtered);
+    }
+
+    function downloadCSV() {
+      let csv = "Username,Question,Answer,Clarity,Fluency,Grammar,Confidence,Suggestions,Total\n";
+      feedbackData.forEach(entry => {
+        const clarity = entry.clarity || "";
+        const fluency = entry.fluency || "";
+        const grammar = entry.grammar || "";
+        const confidence = entry.confidence || "";
+        const total = extractScore(clarity) + extractScore(fluency) + extractScore(grammar) + extractScore(confidence);
+        const answer = (entry.answer || "🎙️ Audio Submitted").replace(/"/g, '""');
+
+        csv += `"${entry.username}","${entry.question}","${truncateText(answer)}","${clarity}","${fluency}","${grammar}","${confidence}","${entry.suggestions || "Pending"}","${total}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "feedback_report.csv";
+      a.click();
+    }
+
+    loadFeedback();
+  </script>
+</body>
+</html>

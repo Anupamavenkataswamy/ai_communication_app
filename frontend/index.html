@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Talent Smart AI | Home</title>
+  <link rel="icon" href="https://www.talentsmart.co.in/wp-content/uploads/2022/07/TSlogo_original-2.png" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: url('https://images.unsplash.com/photo-1593642634367-d91a135587b5?auto=format&fit=crop&w=1400&q=80') no-repeat center center;
+      background-size: cover;
+      background-attachment: fixed;
+      height: 100vh;
+      position: relative;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 0;
+    }
+
+    .navbar {
+      width: 100%;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+    }
+
+    .navbar img {
+      height: 45px;
+    }
+
+    .navbar ul {
+      list-style: none;
+      display: flex;
+      gap: 30px;
+    }
+
+    .navbar ul li a {
+      text-decoration: none;
+      color: #0c2d57;
+      font-weight: 600;
+    }
+
+    .navbar ul li a:hover {
+      color: #ff8c1a;
+    }
+
+    .centered-content {
+      position: absolute;
+      top: 55%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      text-align: center;
+      width: 90%;
+      max-width: 700px;
+      padding: 20px;
+      z-index: 1;
+    }
+
+    .centered-content h1 {
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .centered-content p {
+      font-size: 16px;
+      margin-bottom: 25px;
+      font-weight: 400;
+    }
+
+    .centered-content button {
+      padding: 12px 25px;
+      background-color: #ff8811;
+      color: white;
+      font-size: 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .centered-content button:hover {
+      background-color: #e66f00;
+    }
+
+    @media (max-width: 600px) {
+      .centered-content h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <div class="navbar">
+    <img src="https://www.talentsmart.co.in/wp-content/uploads/2022/07/TSlogo_original-2.png" alt="Talent Smart Logo">
+    <ul>
+      <li><a href="login.html">Login</a></li>
+      <li><a href="signup.html">Sign Up</a></li>
+    </ul>
+  </div>
+
+  <div class="centered-content">
+    <h1>Communication Skills Assignment</h1>
+    <p>Welcome to your AI-powered communication test. Best of luck — your dream opportunity is just around the corner.
+</p>
+  </div>
+</body>
+</html>

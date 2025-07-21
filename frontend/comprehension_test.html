@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comprehension Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    h3 {
+      color: #007acc;
+    }
+
+    .section {
+      background-color: white;
+      margin-bottom: 10px;
+      border-left: 5px solid transparent;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .section:hover {
+      background-color: #f9f9f9;
+    }
+
+    .section.active {
+      background-color: #fff3cd;
+      border-left: 5px solid #ffc107;
+    }
+
+    .title {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .attempted {
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <h3>📘 Instructions</h3>
+  <h4>Sections</h4>
+
+  <div class="section" id="audioSection" onclick="selectSection('audio')">
+    <div class="title">01. Audio Comprehension</div>
+    <div class="attempted" id="audioAttempts">00 / 05 attempted</div>
+  </div>
+
+  <div class="section" id="textSection" onclick="selectSection('text')">
+    <div class="title">02. Text Comprehension</div>
+    <div class="attempted" id="textAttempts">00 / 05 attempted</div>
+  </div>
+
+  <script>
+    let attempts = {
+      audio: 0,
+      text: 0
+    };
+
+    function selectSection(section) {
+      // Remove active class from both
+      document.getElementById("audioSection").classList.remove("active");
+      document.getElementById("textSection").classList.remove("active");
+
+      // Set active to the clicked one
+      document.getElementById(section + "Section").classList.add("active");
+
+      // Increase attempt count
+      if (attempts[section] < 5) {
+        attempts[section]++;
+        document.getElementById(section + "Attempts").innerText =
+          (attempts[section] < 10 ? "0" + attempts[section] : attempts[section]) + " / 05 attempted";
+      }
+
+      // Redirect to the respective page
+      if (section === 'audio') {
+        window.location.href = 'audio_comprehension.html';
+      } else if (section === 'text') {
+        window.location.href = 'text_comprehension.html';
+      }
+    }
+  </script>
+
+</body>
+</html>
