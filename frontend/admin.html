@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Sign Up | AlignAI</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to right, #e0f2ff, #e3e6ff);
+    }
+
+    nav {
+      background-color: #357AFF;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - 60px);
+    }
+
+    form {
+      background-color: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 100px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    input:focus {
+      border-color: #357AFF;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #357AFF;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2e69de;
+    }
+
+    p {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <form id="signupForm">
+      <img src="https://www.talentsmart.co.in/wp-content/uploads/2022/07/TSlogo_original-2.png" alt="Logo" class="logo" />
+      <h2>Create Admin Account</h2>
+      <input type="text" name="username" placeholder="Admin username" required />
+      <input type="email" name="email" placeholder="Admin email" required />
+      <input type="password" name="password" placeholder="Admin password" required />
+      <button type="submit">Register as Admin</button>
+      <p>Already an admin? <a href="admin-login.html">Login here</a></p>
+      <p><a href="index.html">Home</a></p>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('signupForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      console.log("Admin signup form submitted");
+
+      const formData = new FormData(form);
+
+      const response = await fetch("http://localhost:8000/auth/signup", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Admin account created! Redirecting to login...");
+        window.location.href = "admin-login.html";
+      } else {
+        alert(data.detail || "Admin signup failed");
+      }
+    });
+  </script>
+</body>
+</html>

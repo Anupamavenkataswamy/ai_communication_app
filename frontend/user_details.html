@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Candidate Feedback</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8faff;
+      padding: 20px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background-color: #003366;
+      color: white;
+    }
+
+    .wrap-cell {
+      word-wrap: break-word;
+      word-break: break-word;
+      white-space: normal;
+      max-width: 300px;
+    }
+
+    .small-cell {
+      max-width: 120px;
+    }
+
+    .button-container {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .back-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #003366;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .back-button:hover {
+      background-color: #005599;
+    }
+  </style>
+</head>
+<body>
+  <h2>Candidate: <span id="candidateName">Anupama</span></h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Question</th>
+        <th class="wrap-cell">Answer</th>
+        <th class="small-cell">Clarity</th>
+        <th class="small-cell">Fluency</th>
+        <th class="small-cell">Grammar</th>
+        <th class="small-cell">Confidence</th>
+        <th class="wrap-cell">Suggestions</th>
+        <th>Total Marks</th>
+        <th>Audio</th>
+      </tr>
+    </thead>
+    <tbody id="feedbackTable">
+      <!-- Data will be inserted here -->
+    </tbody>
+  </table>
+
+  <div class="button-container">
+    <button class="back-button" onclick="downloadExcel()">⬇️ Download as Excel</button>
+    <button class="back-button" onclick="goBack()">← Back to Dashboard</button>
+  </div>
+
+  <script>
+    const queryParams = new URLSearchParams(window.location.search);
+    const username = queryParams.get("username");
+    document.getElementById("candidateName").innerText = username;
+
+    fetch("http://localhost:8000/admin/feedback")
+      .then(res => res.json())
+      .then(data => {
+        const table = document.getElementById("feedbackTable");
+        const userRows = data.filter(row => row.username === username);
+
+        userRows.forEach(entry => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${entry.question}</td>
+            <td class="wrap-cell">${entry.answer}</td>
+            <td>${entry.clarity}</td>
+            <td>${entry.fluency}</td>
+            <td>${entry.grammar}</td>
+            <td>${entry.confidence}</td>
+            <td class="wrap-cell">${entry.suggestions}</td>
+            <td>${entry.total_score}</td>
+            <td>
+              ${entry.audio_file 
+                ? `<audio controls src="http://localhost:8000/recordings/${entry.audio_file}"></audio>` 
+                : "—"}
+            </td>
+          `;
+          table.appendChild(row);
+        });
+      });
+
+    function goBack() {
+      window.location.href = "admin_dashboard.html";
+    }
+
+    function downloadExcel() {
+      const rows = document.querySelectorAll("#feedbackTable tr");
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Question,Answer,Clarity,Fluency,Grammar,Confidence,Suggestions,Total Marks\n";
+
+      rows.forEach(row => {
+        const cols = row.querySelectorAll("td");
+        const rowData = Array.from(cols).slice(0, 8).map(td => `"${td.innerText.replace(/\n/g, ' ').replace(/"/g, '""')}"`);
+        csvContent += rowData.join(",") + "\n";
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `feedback_${username}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
