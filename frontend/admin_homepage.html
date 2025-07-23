@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard | Talent Smart</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f5f8ff;
+    }
+
+    header {
+      background-color: #3a74f2;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 40px 0;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .admin-button {
+      padding: 14px 28px;
+      font-size: 16px;
+      background-color: #3a74f2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+
+    .admin-button:hover {
+      background-color: #2e62d3;
+    }
+
+    .content-area {
+      margin: 40px auto;
+      font-size: 18px;
+      color: #333;
+      text-align: center;
+      max-width: 900px;
+    }
+
+    h2 {
+      color: #3a74f2;
+    }
+
+    @media (max-width: 600px) {
+      .controls {
+        flex-direction: column;
+      }
+
+      .admin-button {
+        width: 90%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>Talent Smart - Admin Dashboard</header>
+
+  <div class="controls">
+    <a href="admin-signup.html" class="admin-button">Add Admins</a>
+    <a href="signup.html" class="admin-button">Add Users</a>
+    <a href="admin_dashboard.html" class="admin-button">Candidate Feedback</a>
+  </div>
+
+  <div class="content-area">
+    <h2>Welcome Admin!</h2>
+    <p>Select an option above to manage your admin panel.</p>
+  </div>
+
+</body>
+</html>
