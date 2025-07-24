@@ -5,7 +5,7 @@ from fastapi.responses import FileResponse
 import os
 
 # Load environment variables
-load_dotenv(dotenv_path="./backend/.env")
+load_dotenv(dotenv_path="./backend/.env")   
 
 # Import routers
 from backend.feedback import feedback_router
@@ -13,7 +13,7 @@ from backend.auth import auth_router
 from backend.questions import questions_router
 from backend.admin_auth import admin_auth_router
 from backend.admin_dashboard import admin_dashboard_router
-
+ 
 
 # Import DB initializers
 from backend.database import init_db

@@ -105,7 +105,8 @@
       <h2>Create Your Account</h2>
       <input type="text" name="username" placeholder="Choose username" required />
       <input type="email" name="email" placeholder="Enter your email" required />
-      <input type="password" name="password" placeholder="Choose password" required />
+      <input type="password" id="password" name="password" placeholder="Choose password" required />
+      <input type="password" id="confirmPassword" placeholder="Confirm password" required />
       <button type="submit">Sign Up</button>
       <p>Already have an account? <a href="login.html">Login</a></p>
       <p><a href="index.html">Home</a></p>
@@ -114,8 +115,19 @@
 
   <script>
     const form = document.getElementById('signupForm');
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      // ✅ Check if passwords match
+      if (password !== confirmPassword) {
+        alert("❌ Passwords do not match.");
+        return;
+      }
+
       const formData = new FormData(form);
 
       try {
@@ -130,7 +142,6 @@
           alert("✅ Signup successful! Redirecting to login...");
           window.location.href = "login.html";
         } else {
-          // 🎯 Handle specific error messages
           if (data.detail === "Email already registered") {
             alert("❌ Email already registered. Try logging in.");
           } else if (data.detail === "Username already taken") {

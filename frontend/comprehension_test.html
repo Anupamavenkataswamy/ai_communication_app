@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Comprehension Test</title>
   <style>
     body {
@@ -43,6 +43,11 @@
       color: #666;
       font-size: 14px;
     }
+
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -61,34 +66,51 @@
   </div>
 
   <script>
-    let attempts = {
-      audio: 0,
-      text: 0
+    // Step 1: Get user info from localStorage
+    const username = localStorage.getItem("username") || "guest";
+    const userKey = `userAttempt_${username}`;
+
+    const userAttemptData = JSON.parse(localStorage.getItem(userKey)) || {
+      attempted: false,
+      audioAttempted: 0,
+      textAttempted: 0
     };
 
+    // Step 2: Disable sections if already attempted
+    if (userAttemptData.attempted) {
+      document.getElementById("audioSection").classList.add("disabled");
+      document.getElementById("textSection").classList.add("disabled");
+      alert("⚠️ You have already completed the assessment. Only one attempt is allowed.");
+    }
+
+    // Step 3: Update UI based on attempt count
+    document.getElementById("audioAttempts").innerText = `${String(userAttemptData.audioAttempted).padStart(2, '0')} / 05 attempted`;
+    document.getElementById("textAttempts").innerText = `${String(userAttemptData.textAttempted).padStart(2, '0')} / 05 attempted`;
+
     function selectSection(section) {
-      // Remove active class from both
-      document.getElementById("audioSection").classList.remove("active");
-      document.getElementById("textSection").classList.remove("active");
-
-      // Set active to the clicked one
-      document.getElementById(section + "Section").classList.add("active");
-
-      // Increase attempt count
-      if (attempts[section] < 5) {
-        attempts[section]++;
-        document.getElementById(section + "Attempts").innerText =
-          (attempts[section] < 10 ? "0" + attempts[section] : attempts[section]) + " / 05 attempted";
+      if (userAttemptData.attempted) {
+        alert("🚫 You have already completed your attempt.");
+        return;
       }
 
-      // Redirect to the respective page
+      // Optional: track section attempt counts (if desired)
       if (section === 'audio') {
+        userAttemptData.audioAttempted = 5;
+        localStorage.setItem("audioAttempted", 5);
         window.location.href = 'audio_comprehension.html';
       } else if (section === 'text') {
+        userAttemptData.textAttempted = 5;
+        localStorage.setItem("textAttempted", 5);
         window.location.href = 'text_comprehension.html';
       }
+
+      // If both done, lock user
+      if (userAttemptData.audioAttempted >= 5 && userAttemptData.textAttempted >= 5) {
+        userAttemptData.attempted = true;
+      }
+
+      localStorage.setItem(userKey, JSON.stringify(userAttemptData));
     }
   </script>
-
 </body>
 </html>

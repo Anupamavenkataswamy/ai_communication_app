@@ -10,6 +10,7 @@ def init_db():
             username TEXT UNIQUE NOT NULL,
             email TEXT NOT NULL,
             password TEXT NOT NULL
+        
         )
     ''')
     conn.commit()
