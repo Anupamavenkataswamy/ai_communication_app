@@ -105,7 +105,8 @@
       <h2>Admin Sign Up</h2>
       <input type="text" name="username" placeholder="Choose admin username" required />
       <input type="email" name="email" placeholder="Enter admin email" required />
-      <input type="password" name="password" placeholder="Choose admin password" required />
+      <input type="password" name="password" id="password" placeholder="Choose admin password" required />
+      <input type="password" id="confirmPassword" placeholder="Confirm password" required />
       <button type="submit">Sign Up</button>
       <p>Already an admin? <a href="admin-login.html">Login</a></p>
       <p><a href="index.html">Home</a></p>
@@ -114,8 +115,18 @@
 
   <script>
     const form = document.getElementById('adminSignupForm');
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (password !== confirmPassword) {
+        alert("❌ Passwords do not match. Please re-enter.");
+        return;
+      }
+
       const formData = new FormData(form);
 
       try {
