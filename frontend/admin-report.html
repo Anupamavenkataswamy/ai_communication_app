@@ -1,191 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Dashboard | Feedback Viewer</title>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard | Talent Smart AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      margin: 0;
+      background-color: #f4f8ff;
       padding: 20px;
     }
+
     h1 {
       text-align: center;
       color: #003366;
     }
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    input[type="text"] {
-      width: 300px;
-      padding: 10px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
+
     th, td {
-      border: 1px solid #ddd;
       padding: 10px;
-      text-align: left;
-      vertical-align: top;
-      word-wrap: break-word;
+      border: 1px solid #ccc;
+      text-align: center;
+      font-size: 14px;
     }
-    td:nth-child(3) {
-      max-width: 600px;
-      word-break: break-word;
-    }
+
     th {
-      background: #357aff;
+      background-color: #003366;
       color: white;
     }
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
+
+    tr:hover {
+      background-color: #f0f0f0;
     }
-    button {
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-bottom: 20px;
-      border-radius: 4px;
+
+    a.details-link {
+      color: #0044cc;
+      text-decoration: none;
+      font-weight: bold;
     }
-    button:hover {
-      background-color: #45a049;
+
+    a.details-link:hover {
+      text-decoration: underline;
+    }
+
+    .sub-header {
+      background-color: #005599;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Admin Dashboard - User Feedback</h1>
 
-    <input type="text" id="searchInput" placeholder="Search by username..." onkeyup="filterTable()" />
+  <h1>Admin Dashboard - Candidate Summary</h1>
 
-    <button onclick="downloadCSV()">⬇️ Download CSV</button>
-
-    <table id="feedbackTable">
-      <thead>
-        <tr>
-          <th>Username</th>
-          <th>Question</th>
-          <th>Answer</th>
-          <th>Clarity</th>
-          <th>Fluency</th>
-          <th>Grammar</th>
-          <th>Confidence</th>
-          <th>Suggestions</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody">
-        <!-- Feedback rows appear here -->
-      </tbody>
-    </table>
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2">Username</th>
+        <th rowspan="2">Email</th>
+        <th rowspan="2">Total Questions</th>
+        <th colspan="4">Audio Comprehension</th>
+        <th colspan="4">Text Comprehension</th>
+        <th rowspan="2">Total Marks</th>
+        <th rowspan="2">View Details</th>
+      </tr>
+      <tr class="sub-header">
+        <th>Total</th>
+        <th>Answered</th>
+        <th>Unanswered</th>
+        <th>Marks</th>
+        <th>Total</th>
+        <th>Answered</th>
+        <th>Unanswered</th>
+        <th>Marks</th>
+      </tr>
+    </thead>
+    <tbody id="userTableBody"></tbody>
+  </table>
 
   <script>
-    let feedbackData = [];
+    async function loadSummary() {
+      const res = await fetch("http://localhost:8000/admin/feedback");
+      const data = await res.json();
 
-    function extractScore(text) {
-      if (!text) return 0;
-      const match = text.match(/(\d)\/5/);
-      return match ? parseInt(match[1]) : 0;
-    }
+      const userMap = {};
 
-    function truncateText(text, limit = 600) {
-      if (!text) return "";
-      return text.length > limit ? text.slice(0, limit) + "..." : text;
-    }
+      data.forEach(entry => {
+        const user = entry.username;
+        const type = entry.type;
 
-    async function loadFeedback() {
-      try {
-        const res = await fetch("http://localhost:8000/admin/feedback");
-        const data = await res.json();
-        feedbackData = data;
-        populateTable(data);
-      } catch (err) {
-        alert("❌ Failed to load feedback data.");
-        console.error(err);
+        if (!userMap[user]) {
+          userMap[user] = {
+            email: entry.email,
+            audio: { total: 5, answered: 0, score: 0 },
+            text: { total: 5, answered: 0, score: 0 }
+          };
+        }
+
+        if (type === "audio") {
+          userMap[user].audio.answered++;
+          userMap[user].audio.score += entry.total_score;
+        } else if (type === "text") {
+          userMap[user].text.answered++;
+          userMap[user].text.score += entry.total_score;
+        }
+      });
+
+      const tbody = document.getElementById("userTableBody");
+      tbody.innerHTML = "";
+
+      for (const username in userMap) {
+        const info = userMap[username];
+        const audioUnanswered = info.audio.total - info.audio.answered;
+        const textUnanswered = info.text.total - info.text.answered;
+        const totalQuestions = info.audio.total + info.text.total;
+        const totalMarks = info.audio.score + info.text.score;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${username}</td>
+          <td>${info.email}</td>
+          <td>${totalQuestions}</td>
+          <td>${info.audio.total}</td>
+          <td>${info.audio.answered}</td>
+          <td>${audioUnanswered}</td>
+          <td>${info.audio.score}</td>
+          <td>${info.text.total}</td>
+          <td>${info.text.answered}</td>
+          <td>${textUnanswered}</td>
+          <td>${info.text.score}</td>
+          <td>${totalMarks}</td>
+          <td><a class="details-link" href="user_details.html?username=${encodeURIComponent(username)}">View Details</a></td>
+        `;
+        tbody.appendChild(row);
       }
     }
 
-    function populateTable(data) {
-      const tbody = document.getElementById("tableBody");
-      tbody.innerHTML = "";
-
-      // Group by username
-      const grouped = {};
-      data.forEach(entry => {
-        if (!grouped[entry.username]) grouped[entry.username] = [];
-        grouped[entry.username].push(entry);
-      });
-
-      Object.keys(grouped).forEach(username => {
-        const userFeedbacks = grouped[username];
-        userFeedbacks.forEach((entry, i) => {
-          const clarity = entry.clarity || "";
-          const fluency = entry.fluency || "";
-          const grammar = entry.grammar || "";
-          const confidence = entry.confidence || "";
-          const total = extractScore(clarity) + extractScore(fluency) + extractScore(grammar) + extractScore(confidence);
-
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${entry.username}</td>
-            <td>(${i + 1}/8) ${entry.question}</td>
-            <td>${truncateText(entry.answer || "🎙️ Audio Submitted", 600)}</td>
-            <td>${clarity || "Pending"}</td>
-            <td>${fluency || "Pending"}</td>
-            <td>${grammar || "Pending"}</td>
-            <td>${confidence || "Pending"}</td>
-            <td>${entry.suggestions || "Pending"}</td>
-            <td>${total}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      });
-    }
-
-    function filterTable() {
-      const search = document.getElementById("searchInput").value.toLowerCase();
-      const filtered = feedbackData.filter(entry =>
-        entry.username.toLowerCase().includes(search)
-      );
-      populateTable(filtered);
-    }
-
-    function downloadCSV() {
-      let csv = "Username,Question,Answer,Clarity,Fluency,Grammar,Confidence,Suggestions,Total\n";
-      feedbackData.forEach(entry => {
-        const clarity = entry.clarity || "";
-        const fluency = entry.fluency || "";
-        const grammar = entry.grammar || "";
-        const confidence = entry.confidence || "";
-        const total = extractScore(clarity) + extractScore(fluency) + extractScore(grammar) + extractScore(confidence);
-        const answer = (entry.answer || "🎙️ Audio Submitted").replace(/"/g, '""');
-
-        csv += `"${entry.username}","${entry.question}","${truncateText(answer)}","${clarity}","${fluency}","${grammar}","${confidence}","${entry.suggestions || "Pending"}","${total}"\n`;
-      });
-
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "feedback_report.csv";
-      a.click();
-    }
-
-    loadFeedback();
+    loadSummary();
   </script>
+
 </body>
 </html>

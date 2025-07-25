@@ -191,9 +191,10 @@
         localStorage.removeItem("currentQuestionIndex");
         localStorage.removeItem("questionStatus");
         document.getElementById("questionBox").innerHTML = `
-          <h2>Interview Complete!</h2>
-          <p>We'll let you know the results soon. Thank you!</p>
-          <button onclick="goHome()">Go Back to section</button>
+          <h2>Audio Comprehension Completed</h2>
+          <p>You can now proceed to the Text Comprehension section.</p>
+          <button onclick="goHome()">Continue</button>
+        <p style="color: red;">Note: You can only submit once per question.</p>
         `;
         return;
       }
@@ -302,9 +303,14 @@
       }, 1000);
     }
 
-    function goHome() {
-      window.location.href = "comprehension_test.html";
+    async function goHome() { 
+      const username = localStorage.getItem("username");
+      // ✅ Set locally that audio is completed
+      localStorage.setItem("audioSubmitted", "true");
+      // ✅ Redirect to next section
+      window.location.href = "text_comprehension.html"; // Update to your next section
     }
+
 
     function showToast(msg) {
       const toast = document.getElementById("toast");

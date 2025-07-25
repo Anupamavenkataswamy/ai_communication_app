@@ -1,93 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comprehension Test</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Comprehension Test Instructions</title>
+  <link rel="icon" href="https://www.talentsmart.co.in/wp-content/uploads/2022/07/TSlogo_original-2.png" />
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background-color: #f5f5f5;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f8fc;
+      margin: 0;
+      padding: 0;
     }
-
-    h3 {
-      color: #007acc;
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      background-color: rgba(74, 33, 185, 0.9);
+      color: white;
     }
-
-    .section {
-      background-color: white;
-      margin-bottom: 10px;
-      border-left: 5px solid transparent;
-      padding: 15px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      transition: 0.3s;
+    .navbar img { height: 40px; }
+    .navbar h1 { font-size: 20px; margin: 0; }
+    .navbar .profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .navbar .profile img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.05);
+    }
+    h2 {
+      font-size: 24px;
+      color: #004888;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    ul {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #333;
+      padding-left: 20px;
+    }
+    .start-button {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .start-button button {
+      background-color: #4a21b9;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
       cursor: pointer;
     }
-
-    .section:hover {
-      background-color: #f9f9f9;
-    }
-
-    .section.active {
-      background-color: #fff3cd;
-      border-left: 5px solid #ffc107;
-    }
-
-    .title {
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .attempted {
-      color: #666;
-      font-size: 14px;
+    .start-button button:hover {
+      background-color: #3a1799;
     }
   </style>
 </head>
 <body>
 
-  <h3>📘 Instructions</h3>
-  <h4>Sections</h4>
-
-  <div class="section" id="audioSection" onclick="selectSection('audio')">
-    <div class="title">01. Audio Comprehension</div>
-    <div class="attempted" id="audioAttempts">00 / 05 attempted</div>
+  <div class="navbar">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <img src="https://www.talentsmart.co.in/wp-content/uploads/2022/07/TSlogo_original-2.png" alt="Talent Smart Logo">
+      <h1>Comprehension Test</h1>
+    </div>
+    <div class="profile">
+      <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="User Profile" />
+      <span id="profileName">Guest</span>
+    </div>
   </div>
 
-  <div class="section" id="textSection" onclick="selectSection('text')">
-    <div class="title">02. Text Comprehension</div>
-    <div class="attempted" id="textAttempts">00 / 05 attempted</div>
+  <div class="container">
+    <h2>Instructions</h2>
+    <ul>
+      <li>This test consists of two sections: <strong>Audio Comprehension</strong> and <strong>Text Comprehension</strong>.</li>
+      <li>You need to complete both sections to finish the test.</li>
+      <li>Once you click <strong>Submit All</strong> in a section, that section will be disabled and cannot be attempted again.</li>
+      <li>New users will start fresh without any completed status.</li>
+      <li>If your internet disconnects, you can continue the test from where you left off after logging in again.</li>
+      <li>Your progress is saved and visible after each submission.</li>
+      <li>Once both sections are completed, your test will be marked as <strong>Completed</strong>.</li>
+    </ul>
+
+    <div class="start-button">
+      <button onclick="startAssignment()">Start Assignment</button>
+    </div>
   </div>
 
   <script>
-    let attempts = {
-      audio: 0,
-      text: 0
-    };
-
-    function selectSection(section) {
-      // Remove active class from both
-      document.getElementById("audioSection").classList.remove("active");
-      document.getElementById("textSection").classList.remove("active");
-
-      // Set active to the clicked one
-      document.getElementById(section + "Section").classList.add("active");
-
-      // Increase attempt count
-      if (attempts[section] < 5) {
-        attempts[section]++;
-        document.getElementById(section + "Attempts").innerText =
-          (attempts[section] < 10 ? "0" + attempts[section] : attempts[section]) + " / 05 attempted";
-      }
-
-      // Redirect to the respective page
-      if (section === 'audio') {
-        window.location.href = 'audio_comprehension.html';
-      } else if (section === 'text') {
-        window.location.href = 'text_comprehension.html';
-      }
+    function startAssignment() {
+      // Redirect to the audio comprehension section
+      window.location.href = "audio_comprehension.html";
     }
+
+    // 👤 Update profile name from localStorage
+    document.getElementById("profileName").textContent =
+      localStorage.getItem("username") || "Guest";
   </script>
 
 </body>

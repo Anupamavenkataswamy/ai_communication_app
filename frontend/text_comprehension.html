@@ -6,97 +6,150 @@
   <title>Talent Smart AI | Interview</title>
   <link rel="icon" href="https://www.talentsmart.co.in/wp-content/uploads/2022/07/TSlogo_original-2.png" />
   <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4f8ff;
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f8ff;
+      margin: 0;
+      padding: 0;
+      
+    }
+
     .navbar {
+      background-color: #004880;
+      color: #fff;
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 15px 30px;
-      background-color: rgba(0, 72, 136, 0.85);
-      color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .navbar img { height: 40px; }
-    .navbar h1 { font-size: 20px; margin: 0; }
-    .navbar .profile {
+
+    .navbar img {
+      height: 40px;
+    }
+
+    .navbar h1 {
+      font-size: 20px;
+    }
+
+    .profile {
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    .navbar .profile img {
-      width: 30px;
-      height: 30px;
+
+    .profile img {
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
     }
+
     .container {
-      max-width: 1000px;
-      margin: 30px auto;
       display: flex;
       gap: 20px;
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+      flex-wrap: wrap;
     }
+
+    .sidebar, .content {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
     .sidebar {
-      width: 30%;
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      flex: 1 1 300px;
     }
+
     .content {
-      width: 70%;
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      flex: 2 1 600px;
     }
+
     .calendar {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 5px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
       margin-top: 15px;
     }
+
     .calendar div {
+      padding: 10px;
       text-align: center;
-      padding: 8px;
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 14px;
-      background: #f0f0f0;
+      background: #e0e7f0;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
-    .calendar .current { background: #357aff; color: white; font-weight: bold; }
-    .calendar .answered { background: #4CAF50; color: white; }
-    .calendar .unanswered { background: #F44336; color: white; }
+
+    .calendar div:hover {
+      background: #c5d8f3;
+    }
+
+    .calendar .current {
+      background: #0057b8;
+      color: white;
+      font-weight: bold;
+    }
+
+    .calendar .answered {
+      background: #28a745;
+      color: white;
+    }
+
+    .calendar .unanswered {
+      background: #dc3545;
+      color: white;
+    }
+
     .question-box h2 {
       font-size: 18px;
       margin-bottom: 10px;
     }
-    textarea, audio, button {
-      width: 100%;
-      margin-top: 10px;
-    }
+
     textarea {
-      height: 100px;
-      padding: 10px;
+      width: 100%;
+      height: 120px;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
       font-size: 14px;
-    }
-    button {
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      background-color: #357aff;
-      cursor: pointer;
-      font-size: 15px;
-    }
-    .timer {
-      font-size: 16px;
-      font-weight: bold;
+      resize: none;
       margin-top: 10px;
     }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 15px;
+      font-size: 15px;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      background-color: #0057b8;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #004080;
+    }
+
+    .timer {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 16px;
+      color: #333;
+    }
+
     .toast {
       visibility: hidden;
       min-width: 250px;
@@ -119,10 +172,25 @@
       opacity: 1;
       bottom: 50px;
     }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .calendar {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
-<!-- START OF BODY -->
 <body>
+  <!-- Navbar -->
   <div class="navbar">
     <div style="display:flex; align-items:center; gap:10px;">
       <img src="https://www.talentsmart.co.in/wp-content/uploads/2022/07/TSlogo_original-2.png" alt="Talent Smart Logo">
@@ -134,16 +202,22 @@
     </div>
   </div>
 
+  <!-- Main Container -->
   <div class="container">
+    <!-- Sidebar -->
     <div class="sidebar">
       <h3>Test Questions</h3>
       <div class="calendar" id="calendar"></div>
-      <p style="margin-top:20px; font-size:14px;">🟩 Answered<br/>🟥 Unanswered</p>
+      <p style="margin-top:20px; font-size:14px;">
+        🟩 Answered<br/>
+        🟥 Unanswered
+      </p>
     </div>
 
+    <!-- Main Content -->
     <div class="content">
       <div class="question-box" id="questionBox">
-        <h2 id="questionText"></h2>
+        <h2 id="questionText">Loading...</h2>
         <div id="textAnswer">
           <textarea id="answerInput" maxlength="600" placeholder="Type your answer (min 100 chars)..."></textarea>
           <div class="timer" id="textTimer">Time: 2:00</div>
@@ -154,6 +228,9 @@
     </div>
   </div>
 
+  <div id="toast" class="toast"></div>
+
+  <!-- JavaScript remains unchanged -->
   <script>
     let isSubmitting = false;
     let currentQuestionIndex = parseInt(localStorage.getItem("currentQuestionIndex")) || 0;
@@ -235,7 +312,7 @@
 
       isSubmitting = true;
       showToast("⏳ Submitting answer...");
-      
+
       questionStatus[currentQuestionIndex] = "answered";
       localStorage.setItem("questionStatus", JSON.stringify(questionStatus));
 
@@ -249,7 +326,7 @@
     }
 
     function nextQuestion() {
-        if (isSubmitting) {
+      if (isSubmitting) {
         showToast("⏳ Please wait, submitting...");
         return;
       }
@@ -263,9 +340,14 @@
       showQuestion();
     }
 
-    function goHome() {
+    async function goHome() {
+      const username = localStorage.getItem("username");
+    // 🟢 Optional: Mark it locally too
+      localStorage.setItem("textSubmitted", "true");
+      // ⏩ Redirect
       window.location.href = "index.html";
     }
+
 
     function startTextTimer() {
       secondsLeft = 120;
@@ -294,8 +376,15 @@
 
     document.getElementById("profileName").textContent = localStorage.getItem("username") || "Guest";
     loadQuestions();
-  </script>
 
-  <div id="toast" class="toast"></div>
+    // 🔒 Disable browser back button during test
+   window.history.pushState(null, "", window.location.href);
+   window.addEventListener("popstate", function () {
+     if (!window.testCompleted) {
+       window.history.pushState(null, "", window.location.href);
+       alert("⚠️ You cannot go back during the test.");
+     }
+   }); 
+  </script>
 </body>
 </html>

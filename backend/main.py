@@ -1,8 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from fastapi.responses import FileResponse
-import os
 
 # Load environment variables
 load_dotenv(dotenv_path="./backend/.env")
@@ -13,6 +11,12 @@ from backend.auth import auth_router
 from backend.questions import questions_router
 from backend.admin_auth import admin_auth_router
 from backend.admin_dashboard import admin_dashboard_router
+from backend.database import init_db
+from backend.admin_database import init_admin_db
+
+
+
+
 
 
 # Import DB initializers
@@ -43,6 +47,8 @@ app.include_router(auth_router, prefix="/auth")
 app.include_router(questions_router)
 app.include_router(admin_auth_router)
 app.include_router(admin_dashboard_router)
+
+
 
 @app.get("/")
 def read_root():
