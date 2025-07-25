@@ -26,4 +26,3 @@ def login(email: str = Form(...), password: str = Form(...)):
     if cursor.fetchone():
         return {"message": "Login successful"}
     raise HTTPException(status_code=401, detail="Invalid credentials")
-
